@@ -1,0 +1,111 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\author{Antonio Jesús Heredia Castilllo}
+\title{Comparación de resultados ejercicio 7}
+\begin{document}
+	\maketitle
+	En este ejercicio vamos a comparar como funcionaria un kernel para sumar matrices en Cuda con diferentes modificaciones. 
+	
+	El código original usara bloques 2D para sumar las matrices. En la primera modificación usaremos bloques 1D donde una hebra sumara todas posiciones de una misma fila. Y en la segunda modificación una hebra sumara todas las posiciones de la misma columna. El código de estas modificaciones esta adjuntado junto al PDF. 
+	Para ver como responde estas modificaciones haremos pruebas con distintos parámetros. \\
+	El primer experimento lo hemos realizado con un tamaño de bloque de $8x8$ y matrices de distintos tamaños. Los datos obtenidos los podemos ver en la siguiente tabla: \\
+	\begin{tabular}{|c|c|c|c|}
+		\hline 
+		N & Original & Modificación 1 & Modificacióin 2 \\ 
+		\hline 
+		40 & 0,000037 & 0,000045 &  0,000056 \\ 
+		\hline 
+		100 & 0,000089 & 0,000133 & 0,000096 \\ 
+		\hline 
+		200 & 0,000206 & 0,000211 &  0,000295\\ 
+		\hline 
+		500 & 0,001403 & 0,001081 & 0,001570 \\ 
+		\hline 
+		1000 & 0,004000 & 0,004133 & 0,006002 \\ 
+		\hline 
+		2000 & 0,015110 & 0,020209 & 0,022229 \\ 
+		\hline 
+		5000 & 0,096241 & 0,161487 & 0,177768 \\ 
+		\hline 
+		10000 & 0,360276 & 0,745313 & 0,665087 \\ 
+		\hline 
+		20000 & 0,699896 & 0,787172 & 0,753009 \\ 
+		\hline 
+	\end{tabular} \\\\
+Y a continuación podemos ver una grafica comparando los resultados. 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{screenshot002}
+		\caption[Comparación 8x8]{Comparación 8x8}
+	\label{fig:screenshot002}
+\end{figure}
+
+El siguiente experimento lo he realizado para tamaños de bloque de 16x16. Los resultados se pueden ver en la siguiente tabla: \\
+\begin{tabular}{|c|c|c|c|}
+	\hline 
+	N & Original & Modificación 1 & Modificacióin 2 \\ 
+	\hline 
+	40 & 0,000034 & 0,000076 &  0,000149 \\ 
+	\hline 
+	100 & 0,000067 & 0,000138 & 0,000089 \\ 
+	\hline 
+	200 &0,000223& 0,000283 &  0,000230\\ 
+	\hline 
+	500 &0,001229 & 0,001267 & 0,001325 \\ 
+	\hline 
+	1000 & 0,004194 & 0,003891 & 0,004356 \\ 
+	\hline 
+	2000 & 0,018465 &0,024261 & 0,016769 \\ 
+	\hline 
+	5000 & 0,101747 & 0,170346 & 0,096955 \\ 
+	\hline 
+	10000 & 0,420579 & 0,654600 & 0,448342 \\ 
+	\hline 
+	20000 & 0,742035 & 1,012560 & 0,738639 \\ 
+	\hline 
+\end{tabular} \\\\
+Y a continuación podemos ver una grafica comparando los resultados. \\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{screenshot001}
+	\caption[Comparación 16x16]{Comparación 16x16}
+	\label{fig:screenshot001}
+\end{figure}\\
+El siguiente experimento lo he realizado para tamaños de bloque de $32x32$. Los resultados se pueden ver en la siguiente tabla: \\
+\begin{tabular}{|c|c|c|c|}
+	\hline 
+	N & Original & Modificación 1 & Modificación 2 \\ 
+	\hline 
+	40 & 0,000056& 0,000056&  0,000046\\ 
+	\hline 
+	100 & 0,000069 & 0,000096& 0,000086\\ 
+	\hline 
+	200 &0,000317& 0,000295 &  0,000232\\ 
+	\hline 
+	500 &0,001090& 0,001570 & 0,001247 \\ 
+	\hline 
+	1000 & 0,005071 &0,006002 & 0,004240 \\ 
+	\hline 
+	2000 &0,015409 &0,022229 & 0,017617 \\ 
+	\hline 
+	5000 &0,093398& 0,177768 & 0,094377 \\ 
+	\hline 
+	10000 & 0,375558 & 0,665087 &0,407680\\ 
+	\hline 
+	20000 & 0,881141 & 0,753009 & 0,782449 \\ 
+	\hline 
+\end{tabular} \\\\
+En la Figura \ref{fig:screenshot003} podemos ver la grafica comparando resultados. \\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{screenshot003}
+		\caption[Comparación 32x32]{Comparación 32x32}
+	\label{fig:screenshot003}
+\end{figure}\\
+
+Viendo los resultados de tiempo de los experimentos realizados podemos concluir que la mejor opción seria usar un tamaño de bloque de $16x16$ con la modificación 2.  Aunque para asegurarnos de estos datos habría que haber realizado varios experimentos para el mismo tamaño de bloque y el mismo tamaño de matriz. Otra cosa que podemos deducir de los experimentos realizados es que la peor opción es usar la modificación numero 1 en todos los casos. Mientras que en la modificación 2 y en la original obtenemos datos muy parecidos. \\
+\end{document}
