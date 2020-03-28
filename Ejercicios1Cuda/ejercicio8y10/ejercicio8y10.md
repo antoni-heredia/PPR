@@ -50,6 +50,36 @@ Con la modificación anterior lo que estamos realizando es una cosa muy simple. 
 Los parámetros que usaría para invocar este kernel seria:
 ```c
 cantidad_bloques = cantidad_bloques_anterior
-cantidad_hebras_por_bloque = cantidad_hebras_por_bloque_anterior
+cantidad_hebras_por_bloque = cantidad_hebras_por_bloque_anterior/2
 ```
 No habrá un coste superior en operaciones aritméticas ya que la cantidad de sumas que se realiza es la misma. Como la cantidad de operaciones usadas es la misma y la memoria también es la misma, no creo que haya ninguna limitación en los recursos.
+## Ejercicio 10
+#### Implementar un kernel para aproximar el valor de pi tal como se hace en este código secuencial:
+```c
+static long num_steps = 100000;
+double step;
+void main () {
+    int i; double x, pi, sum = 0.0;
+    step = 1.0/(double) num_steps;
+    for (i=1;i<= num_steps; i++){
+        x = (i-0.5)*step;
+        sum = sum + 4.0/(1.0+x*x);
+    }
+    pi = step * sum;
+```
+El código completo podemos encontrarlo adjunto con este documento. Por evitar poner todo los datos simplemente pondré aquí el kernel cuda que se encarga de realizar el código anterior excepto la suma.
+```c
+__global__ void calcularPI(double *A, double step, int N )
+{
+  int i = blockIdx.x * blockDim.x + threadIdx.x; // Compute row index
+  if (i < N)
+  {
+    double x = (i + 1 - 0.5) * step;
+    A[i] = 4.0 / (1.0 + x * x);
+  }
+}
+```
+Guardo los datos calculados por cada hebra en un vector y luego lo sumare con una función de reducción. 
+Un ejemplo del resultado de la ejecución del código creado es el siguiente:
+
+![](resultadopng.png)

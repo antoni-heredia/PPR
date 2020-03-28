@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include <sys/time.h>
-
+#define blocksizeR 1024
 double cpuSecond()
 {
   struct timeval tp;
@@ -19,14 +19,17 @@ __global__ void calcularPI(double *A, double step, int N )
 }
 __global__ void reduceSum(double *d_V, int n)
 {
-  extern __shared__ double sdata[];
+  extern __shared__ double sdata[blocksizeR];
 
   int tid = threadIdx.x;
-  int i = blockIdx.x * blockDim.x * 2 + threadIdx.x;
-  double suma = (i < n) ? d_V[i] : 0;
+  int i = blockIdx.x *(blockDim.x * 2) + threadIdx.x;
+  double suma = (i < n) ? d_V[i] : 0.0;
+
   if (i + blockDim.x < n) 
     suma += d_V[i + blockDim.x];
+
   sdata[tid] = suma;
+
   __syncthreads();
 
   for (int s = blockDim.x / 2; s > 0; s >>= 1)
@@ -37,8 +40,9 @@ __global__ void reduceSum(double *d_V, int n)
     }
     __syncthreads();
   }
-  if (tid == 0)
+  if (tid == 0){
     d_V[blockIdx.x] = suma;
+  }
 }
 int main()
 {
@@ -72,14 +76,17 @@ int main()
   t1 = cpuSecond();
 
   /* Compute the execution configuration */
-  int threadsPerBlock = 1024;
+  int threadsPerBlock = blocksizeR;
   int numBlocks = ceil(((float)num_steps) / threadsPerBlock);
+  
   calcularPI<<<numBlocks, threadsPerBlock>>>(A_d, step, num_steps);
+  cudaDeviceSynchronize();
+  reduceSum<<<numBlocks,threadsPerBlock/2>>>(A_d,num_steps);
 
   /* Copy data from deveice memory to host memory */
   cudaMemcpy(A, A_d, sizeof(double) * num_steps, cudaMemcpyDeviceToHost);
   pi = 0;
-  for(int i = 0; i < num_steps;i++)
+  for(int i = 0; i < numBlocks;i++)
     pi+=A[i];
   pi = pi*step;
   double Tgpu = cpuSecond() - t1;
