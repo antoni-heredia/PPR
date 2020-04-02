@@ -1,6 +1,6 @@
 #include "stdio.h"
 
-const int N=100000000;
+const int N=10000;
 
 __global__ void add_arrays_gpu( float *in1, float *in2, float *out, int Ntot)
 {

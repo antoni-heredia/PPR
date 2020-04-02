@@ -1,19 +1,19 @@
-#Makefile
-
 # CUDA code generation flags
+
 GENCODE_SM20    := -gencode arch=compute_20,code=sm_20
 GENCODE_SM30    := -gencode arch=compute_30,code=sm_30
 GENCODE_SM35    := -gencode arch=compute_35,code=sm_35
 GENCODE_SM50    := -gencode arch=compute_50,code=sm_50
 GENCODE_SM60    := -gencode arch=compute_60,code=sm_60
 GENCODE_SMXX    := -gencode arch=compute_70,code=compute_70
-GENCODE_FLAGS   ?= $(GENCODE_SM30) $(GENCODE_SM35) $(GENCODE_SM35) $(GENCODE_SM50) $(GENCODE_SM60) $(GENCODE_SMXX) 
-OBJ = suma_vectores
-SRC = suma_vectores.cu
+GENCODE_FLAGS   ?= $(GENCODE_SM30) $(GENCODE_SM35) $(GENCODE_SM35) $(GENCODE_SM50) $(GENCODE_SM60) $(GENCODE_SMXX)
 
-$(OBJ):$(SRC)
-	/usr/local/cuda-10.2/bin/nvcc -I./includes  -O3 -m64   $(GENCODE_FLAGS) $(SRC) -o $(OBJ)
+floyd: transformacion.cu 
+	/usr/local/cuda-10.2/bin/nvcc -I./includes  -O3 -m64   $(GENCODE_FLAGS)   transformacion.cu  -o transformacion
+
+clean:
+	rm -f transformacion *.o.
 
 clean: 
-	rm $(OBJ) *.o *~
+	rm $(OBJ) *.o 
 
