@@ -2,6 +2,8 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <math.h>
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -16,9 +18,7 @@ int main(int argc, char *argv[])
     {
         if (rank == 0)
         {
-            cout << "No se ha especificado numero de elementos, multiplo de la cantidad de
-                entrada,
-                por defecto sera " << size * 100;
+            cout << "No se ha especificado numero de elementos, multiplo de la cantidad de entrada, por defecto sera " << size * 100;
                     cout
                     << "\nUso: <ejecutable> <cantidad>" << endl;
         }
@@ -56,8 +56,7 @@ int main(int argc, char *argv[])
     {
         for (long i = 0; i < tama; ++i)
         {
-            VectorA[i] = i + 1;        // Vector A recibe valores 1, 2, 3, ..., tama
-            VectorB[i] = (i + 1) * 10; // Vector B recibe valores 10, 20, 30, ..., tama*10
+            VectorA[i] = i + 1; // Vector A recibe valores 1, 2, 3, ..., tama
         }
     }
 
@@ -70,15 +69,23 @@ int main(int argc, char *argv[])
                 MPI_LONG,         // Tipo del dato que se recibira
                 0,                // proceso principal que reparte los datos
                 MPI_COMM_WORLD);  // Comunicador (En este caso, el global)
-    // Repartimos los valores del vector B
-    MPI_Scatter(&VectorB[0],
-                tama / size,
-                MPI_LONG,
-                &VectorBLocal[0],
-                tama / size,
-                MPI_LONG,
-                0,
-                MPI_COMM_WORLD);
+    
+    int Bsize = ceil(tama / size);
+    //Calculo el inicio y el final del intervalo para este proceso
+    int istart = rank * Bsize;
+    int iend;
+    //Si en este caso  (el ultimo proceso) hay mas que lo que indicamos en lo argumentos
+    //nos quedamos como final el numero n introducido
+
+    if (rank * Bsize + Bsize > tama)
+        iend = tama;
+    else
+        iend = rank * Bsize + Bsize;
+    int x = 0;
+    for (long i = istart; i < iend; ++i){
+        VectorBLocal[x] = (i + 1) * 10;
+        x++;
+    }
 
     // Calculo de la multiplicacion escalar entre vectores
     long producto = 0;

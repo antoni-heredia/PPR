@@ -16,9 +16,7 @@ int main(int argc, char *argv[])
     {
         if (rank == 0)
         {
-            cout << "No se ha especificado numero de elementos, multiplo de la cantidad de
-                entrada,
-                por defecto sera " << size * 100;
+            cout << "No se ha especificado numero de elementos, multiplo de la cantidad de entrada, por defecto sera " << size * 100;
                     cout
                     << "\nUso: <ejecutable> <cantidad>" << endl;
         }
